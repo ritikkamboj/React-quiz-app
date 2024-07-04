@@ -10,10 +10,9 @@ const initialstate = {
   questions: [],
 
   step: "loading",
-  index : 0,
-
-  
-
+  index: 0,
+  answer: null,
+  points: 0,
 };
 
 function reducer(state, action) {
@@ -22,17 +21,31 @@ function reducer(state, action) {
       return { ...state, questions: action.payload, step: "ready" };
     case "notRecived":
       return { ...state, step: "error" };
-      case 'start':
-        return {...state , step : 'active' }
+    case "start":
+      return { ...state, step: "active" };
+    case "newAnswer":
+      const question1 = state.questions.at(state.index);
+
+      return {
+        ...state,
+        answer: action.payload,
+        points:
+          action.payload === question1.correctOption
+            ? state.points + question1.points
+            : state.points,
+      };
     default:
       return new Error("data not able to fetched ");
   }
 }
 export default function App() {
-  const [{ questions, step , index}, dispatch] = useReducer(reducer, initialstate);
+  const [{ questions, step, index, answer, points }, dispatch] = useReducer(
+    reducer,
+    initialstate
+  );
 
-const numberOfQuestions = questions.length;
-// console.log(numberOfQuestions)
+  const numberOfQuestions = questions.length;
+  // console.log(numberOfQuestions)
 
   useEffect(function () {
     fetch("http://localhost:8000/questions")
@@ -46,8 +59,19 @@ const numberOfQuestions = questions.length;
       <Main>
         {step === "loading" && <Loader />}
         {step === "error" && <Error />}
-        {step === 'ready' &&  <StartScreen numberOfQuestions={numberOfQuestions} dispatch={dispatch}/>}
-        {step ==='active' && <Question question ={questions[index]}/>}
+        {step === "ready" && (
+          <StartScreen
+            numberOfQuestions={numberOfQuestions}
+            dispatch={dispatch}
+          />
+        )}
+        {step === "active" && (
+          <Question
+            question={questions[index]}
+            dispatch={dispatch}
+            answer={answer}
+          />
+        )}
       </Main>
     </div>
   );
