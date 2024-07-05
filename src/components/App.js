@@ -7,6 +7,7 @@ import StartScreen from "./StartScreen";
 import Question from "./Question";
 import NextQuestion from "./NextQuestion";
 import Progress from "./Progress";
+import FinishScreen from "./FinishScreen";
 
 const initialstate = {
   questions: [],
@@ -15,6 +16,7 @@ const initialstate = {
   index: 0,
   answer: null,
   points: 0,
+  highscore: 0,
 };
 
 function reducer(state, action) {
@@ -38,12 +40,19 @@ function reducer(state, action) {
       };
     case "nextQuestion":
       return { ...state, index: state.index + 1, answer: null };
+    case "finish":
+      return {
+        ...state,
+        step: "finished",
+        highscore:
+          state.points > state.highscore ? state.points : state.highscore,
+      };
     default:
       return new Error("data not able to fetched ");
   }
 }
 export default function App() {
-  const [{ questions, step, index, answer, points }, dispatch] = useReducer(
+  const [{ questions, step, index, answer, points,highscore }, dispatch] = useReducer(
     reducer,
     initialstate
   );
@@ -89,8 +98,16 @@ export default function App() {
               dispatch={dispatch}
               answer={answer}
             />
-            <NextQuestion dispatch={dispatch} answer={answer} />
+            <NextQuestion
+              dispatch={dispatch}
+              answer={answer}
+              index={index}
+              numberOfQuestions={numberOfQuestions}
+            />
           </>
+        )}
+        {step === "finished" && (
+          <FinishScreen points={points} maxPossiblePoints={maxPossiblePoints} highscore={highscore} />
         )}
       </Main>
     </div>
