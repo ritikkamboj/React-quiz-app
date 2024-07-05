@@ -8,6 +8,11 @@ import Question from "./Question";
 import NextQuestion from "./NextQuestion";
 import Progress from "./Progress";
 import FinishScreen from "./FinishScreen";
+import Footer from "./Footer";
+import Timer from "./Timer";
+
+
+const SECS_PER_QUES=30;
 
 const initialstate = {
   questions: [],
@@ -17,6 +22,7 @@ const initialstate = {
   answer: null,
   points: 0,
   highscore: 0,
+  timeRemaining : null
 };
 
 function reducer(state, action) {
@@ -26,7 +32,7 @@ function reducer(state, action) {
     case "notRecived":
       return { ...state, step: "error" };
     case "start":
-      return { ...state, step: "active" };
+      return { ...state, step: "active" , timeRemaining : state.questions.length* SECS_PER_QUES};
     case "newAnswer":
       const question1 = state.questions.at(state.index);
 
@@ -49,12 +55,17 @@ function reducer(state, action) {
       };
       case 'restart':
         return {...initialstate,step : 'ready',questions : state.questions}
+      case 'tick':
+        return {...state, timeRemaining : state.timeRemaining -1,
+          step : state.timeRemaining === 0 ? 'finished' : state.step
+
+        }
     default:
       return new Error("data not able to fetched ");
   }
 }
 export default function App() {
-  const [{ questions, step, index, answer, points,highscore }, dispatch] = useReducer(
+  const [{ questions, step, index, answer, points,highscore ,timeRemaining}, dispatch] = useReducer(
     reducer,
     initialstate
   );
@@ -100,12 +111,16 @@ export default function App() {
               dispatch={dispatch}
               answer={answer}
             />
+            <Footer>
+              <Timer dispatch={dispatch} timeRemaining={timeRemaining}/>
             <NextQuestion
               dispatch={dispatch}
               answer={answer}
               index={index}
               numberOfQuestions={numberOfQuestions}
             />
+            </Footer>
+        
           </>
         )}
         {step === "finished" && (

@@ -2,7 +2,7 @@
 import Option from "./Option";
 
 function Question({ question, dispatch, answer}) {
-  console.log(question);
+  // console.log(question);
   return (
     <div>
       {/* <p> Jai shree Ram </p> */}

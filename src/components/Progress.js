@@ -1,5 +1,5 @@
 function Progress({index,numberOfQuestions,points, maxPossiblePoints, answer}) {
-    console.log(numberOfQuestions)
+    // console.log(numberOfQuestions)
     return (
        <header className="progress">
         <progress max={numberOfQuestions} value={index + Number( answer !== null  )}></progress>
