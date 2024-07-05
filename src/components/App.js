@@ -5,6 +5,7 @@ import Loader from "./Loader";
 import Error from "./Error";
 import StartScreen from "./StartScreen";
 import Question from "./Question";
+import NextQuestion from "./NextQuestion";
 
 const initialstate = {
   questions: [],
@@ -25,6 +26,7 @@ function reducer(state, action) {
       return { ...state, step: "active" };
     case "newAnswer":
       const question1 = state.questions.at(state.index);
+    
 
       return {
         ...state,
@@ -34,6 +36,8 @@ function reducer(state, action) {
             ? state.points + question1.points
             : state.points,
       };
+      case 'nextQuestion':
+        return {...state , index : state.index +1, answer :null}
     default:
       return new Error("data not able to fetched ");
   }
@@ -65,12 +69,16 @@ export default function App() {
             dispatch={dispatch}
           />
         )}
-        {step === "active" && (
+        {step === "active" && (<>
+
           <Question
             question={questions[index]}
             dispatch={dispatch}
             answer={answer}
           />
+          <NextQuestion dispatch ={dispatch} answer ={answer}/>
+        </>
+          
         )}
       </Main>
     </div>
